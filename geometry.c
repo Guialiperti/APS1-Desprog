@@ -12,7 +12,7 @@ int verify(point p, point a, point b) {
     return 0;
   }
 
-  //Checa se o ponto p esta no segmento AB
+  //Checa se o ponto p esta diretamente no segmento AB
   int crossproduct = (p.y - a.y) * (b.x - a.x) - (p.x - a.x) * (b.y - a.y);
   int dotproduct = (p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y);
   int squaredlengthba = (b.x - a.x)*(b.x - a.x) + (b.y - a.y)*(b.y - a.y);
@@ -36,6 +36,7 @@ int verify(point p, point a, point b) {
 
   //checa condicionais para ver se houve uma interseção entre o vetor p end_ray e o vetor ab 
   if(0 <= u && u <= 1 && 0 <= t && t <= 1){
+    //verifica se o raio atingiu um vertice, e define se o com uma rotação sentido horário o raio atingiria a aresta
     if(p.y == a.y){
       if(a.y > b.y){
       return 1;
@@ -58,5 +59,31 @@ int verify(point p, point a, point b) {
 }
 
 int inside(point p, point poly[], int n) {
-  return 0;
+  int hits = 0;
+
+  for(int i = 0; i <= n-2; i++){
+    int check_side = verify(p, poly[i], poly[i+1]);
+
+    if(check_side == 2){ // se o ponto esta em cima de qualquer aresta retorna 1
+      return 1;
+    }
+    if(check_side == 1){
+      hits += 1; //Soma quantidade de interseções entre o raio e as arestas
+    }
+  }
+  int last_side = verify(p, poly[n-1], poly[0]);
+  if(last_side == 2){
+    return 1;
+  }
+  if(last_side == 1){
+    hits += 1;
+  }
+  //verifica se for par está fora do polygono caso contrario esta dentro
+  if(hits % 2 == 0){
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
 }
